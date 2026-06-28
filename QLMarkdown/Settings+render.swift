@@ -207,7 +207,16 @@ extension Settings {
                 os_log("Could not enable markdown `heads` extension!", log: OSLog.rendering, type: .error)
             }
         }
-        
+
+        if self.admonitionExtension {
+            if let ext = cmark_find_syntax_extension("admonition") {
+                cmark_parser_attach_syntax_extension(parser, ext)
+                os_log("Enabled markdown `admonition` extension.", log: OSLog.rendering, type: .debug)
+            } else {
+                os_log("Could not enable markdown `admonition` extension!", log: OSLog.rendering, type: .error)
+            }
+        }
+
         if self.highlightExtension {
             if let ext = cmark_find_syntax_extension("highlight") {
                 cmark_parser_attach_syntax_extension(parser, ext)

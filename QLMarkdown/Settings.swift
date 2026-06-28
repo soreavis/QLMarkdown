@@ -224,6 +224,7 @@ class Settings: Codable {
         case autoLinkExtension
         case checkboxExtension
         case headsExtension
+        case admonitionExtension
         case hightlightExtension
         case inlineImageExtension
         case mathExtension
@@ -451,6 +452,7 @@ class Settings: Codable {
     var autoLinkExtension: Bool = true
     var checkboxExtension: Bool = false
     var headsExtension: Bool = true
+    var admonitionExtension: Bool = false
     var highlightExtension: Bool = false
     var inlineImageExtension: Bool = true
     var mathExtension: JSExtension = .link(url: nil)
@@ -530,6 +532,7 @@ class Settings: Codable {
         self.mentionExtension = try container.decode(Bool.self, forKey:.mentionExtension)
         self.checkboxExtension = try container.decode(Bool.self, forKey:.checkboxExtension)
         self.headsExtension = try container.decode(Bool.self, forKey:.headsExtension)
+        self.admonitionExtension = try container.decodeIfPresent(Bool.self, forKey: .admonitionExtension) ?? false
         self.highlightExtension = try container.decode(Bool.self, forKey: .hightlightExtension)
        
         self.syntaxHighlightExtension = try container.decode(Bool.self, forKey: .syntaxHighlightExtension)
@@ -606,6 +609,7 @@ class Settings: Codable {
         try container.encode(self.mentionExtension, forKey: .mentionExtension)
         try container.encode(self.checkboxExtension, forKey: .checkboxExtension)
         try container.encode(self.headsExtension, forKey: .headsExtension)
+        try container.encode(self.admonitionExtension, forKey: .admonitionExtension)
         try container.encode(self.highlightExtension, forKey: .hightlightExtension)
         
         try container.encode(self.syntaxHighlightExtension, forKey: .syntaxHighlightExtension)
@@ -696,7 +700,8 @@ class Settings: Codable {
         self.mentionExtension = s.mentionExtension
         self.checkboxExtension = s.checkboxExtension
         self.headsExtension = s.headsExtension
-        
+        self.admonitionExtension = s.admonitionExtension
+
         self.highlightExtension = s.highlightExtension
         
         self.syntaxHighlightExtension = s.syntaxHighlightExtension
@@ -772,6 +777,9 @@ class Settings: Codable {
         }
         if let ext = defaultsDomain[Self.CodingKeys.headsExtension.rawValue] as? Bool {
             headsExtension = ext
+        }
+        if let ext = defaultsDomain[Self.CodingKeys.admonitionExtension.rawValue] as? Bool {
+            admonitionExtension = ext
         }
         
         if let ext = defaultsDomain[Self.CodingKeys.hightlightExtension.rawValue] as? Bool {

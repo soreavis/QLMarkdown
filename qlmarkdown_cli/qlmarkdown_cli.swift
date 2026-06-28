@@ -143,7 +143,10 @@ struct ExtensionsOptions: ParsableArguments {
     
     @Option(help: ArgumentHelp("Create anchors for the heads.", valueName: "on|off"))
     var headsAnchor: BoolArgumentEnum? = nil
-    
+
+    @Option(help: ArgumentHelp("Render `!!! type` admonitions as callout boxes.", valueName: "on|off"))
+    var admonition: BoolArgumentEnum? = nil
+
     @Option(help: ArgumentHelp("Highlight text marked with `==`.", valueName: "on|off"))
     var highlight: BoolArgumentEnum? = nil
     
@@ -298,6 +301,9 @@ struct QLMarkdownCLI: ParsableCommand {
         if let o = extensions.headsAnchor {
             settings.headsExtension = o == .on
         }
+        if let o = extensions.admonition {
+            settings.admonitionExtension = o == .on
+        }
         if let o = extensions.highlight {
             settings.highlightExtension = o == .on
         }
@@ -407,6 +413,7 @@ struct QLMarkdownCLI: ParsableCommand {
         }
         print("    --github-mentions: \(settings.mentionExtension ? "on" : "off")")
         print("    --heads-anchor: \(settings.headsExtension ? "on" : "off")")
+        print("    --admonition: \(settings.admonitionExtension ? "on" : "off")")
         print("    --highlight: \(settings.highlightExtension ? "on" : "off")")
         print("    --inline-images: \(settings.inlineImageExtension ? "on" : "off")")
         switch settings.mathExtension {
