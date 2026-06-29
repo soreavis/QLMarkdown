@@ -7,17 +7,33 @@
 
 import Foundation
 import OSLog
+#if canImport(AppKit)
+import AppKit
+#endif
 
 enum CMARK_Error: Error {
     case parser_create
     case parser_parse
 }
 
-enum Appearance: Int {
+enum Appearance: Int, Codable {
     case undefined
     case light
     case dark
 }
+
+#if canImport(AppKit)
+extension Appearance {
+    /// `NSAppearance` used to force a window/view to light or dark; `nil` follows the system.
+    var nsAppearance: NSAppearance? {
+        switch self {
+        case .undefined: return nil
+        case .light: return NSAppearance(named: .aqua)
+        case .dark: return NSAppearance(named: .darkAqua)
+        }
+    }
+}
+#endif
 
 enum JSExtension: Codable {
     enum CodingKeys: String, CodingKey {
@@ -238,6 +254,7 @@ class Settings: Codable {
         case emojiExtension
         case strikethroughExtension
         case syntaxHighlightExtension
+        case appearanceMode
         case syntaxWordWrapOption
         case syntaxLineNumbersOption
         case syntaxTabsOption
@@ -397,6 +414,11 @@ class Settings: Codable {
         }
     }
     
+    /// The effective light/dark appearance: the forced ``appearanceMode``, or the system when auto.
+    var resolvedAppearance: Appearance {
+        appearanceMode == .undefined ? (Settings.isLightAppearance ? .light : .dark) : appearanceMode
+    }
+
     /**
      * Init the settins from the shared App Groups.
      */
@@ -465,6 +487,8 @@ class Settings: Codable {
     var emojiExtension: EmojiMode = .font
     var strikethroughExtension: StrikethroughMode = .single
     var syntaxHighlightExtension: Bool = true
+    /// Forced light/dark appearance for the rendered output; `.undefined` follows the system.
+    var appearanceMode: Appearance = .undefined
     var syntaxWordWrapOption: Int = 0
     var syntaxLineNumbersOption: Bool = false
     var syntaxTabsOption: Int = 4
@@ -533,6 +557,7 @@ class Settings: Codable {
         self.highlightExtension = try container.decode(Bool.self, forKey: .hightlightExtension)
        
         self.syntaxHighlightExtension = try container.decode(Bool.self, forKey: .syntaxHighlightExtension)
+        self.appearanceMode = try container.decodeIfPresent(Appearance.self, forKey: .appearanceMode) ?? .undefined
         self.syntaxWordWrapOption = try container.decode(Int.self, forKey: .syntaxWordWrapOption)
         self.syntaxLineNumbersOption = try container.decode(Bool.self, forKey: .syntaxLineNumbersOption)
         self.syntaxTabsOption = try container.decode(Int.self, forKey: .syntaxTabsOption)
@@ -609,6 +634,7 @@ class Settings: Codable {
         try container.encode(self.highlightExtension, forKey: .hightlightExtension)
         
         try container.encode(self.syntaxHighlightExtension, forKey: .syntaxHighlightExtension)
+        try container.encode(self.appearanceMode, forKey: .appearanceMode)
         try container.encode(self.syntaxWordWrapOption, forKey: .syntaxWordWrapOption)
         try container.encode(self.syntaxLineNumbersOption, forKey: .syntaxLineNumbersOption)
         try container.encode(self.syntaxTabsOption, forKey: .syntaxTabsOption)
@@ -700,6 +726,7 @@ class Settings: Codable {
         self.highlightExtension = s.highlightExtension
         
         self.syntaxHighlightExtension = s.syntaxHighlightExtension
+        self.appearanceMode = s.appearanceMode
         self.syntaxWordWrapOption = s.syntaxWordWrapOption
         self.syntaxLineNumbersOption = s.syntaxLineNumbersOption
         self.syntaxTabsOption = s.syntaxTabsOption
@@ -781,7 +808,10 @@ class Settings: Codable {
         if let ext = defaultsDomain[Self.CodingKeys.syntaxHighlightExtension.rawValue] as? Bool {
             syntaxHighlightExtension = ext
         }
-        
+        if let n = defaultsDomain[Self.CodingKeys.appearanceMode.rawValue] as? Int, let a = Appearance(rawValue: n) {
+            appearanceMode = a
+        }
+
         if let characters = defaultsDomain[Self.CodingKeys.syntaxWordWrapOption.rawValue] as? Int {
             syntaxWordWrapOption = characters
         }

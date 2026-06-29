@@ -767,6 +767,18 @@ table.debug td {
         return mode.getScriptCode(extraTagLink: extraTagLink, extraTagEmbed: extraTagEmbed)
     }
     
+    /// Forces `default.css`'s `@media (prefers-color-scheme: dark)` blocks to a fixed appearance by
+    /// rewriting just the media condition: `not all` never matches (light), `all` always matches (dark).
+    /// `.undefined` (auto) is left untouched, so the render keeps following the system.
+    private func forcedAppearanceCSS(_ css: String?) -> String? {
+        guard let css else { return nil }
+        switch self.appearanceMode {
+        case .undefined: return css
+        case .light: return css.replacingOccurrences(of: "@media (prefers-color-scheme: dark)", with: "@media not all")
+        case .dark: return css.replacingOccurrences(of: "@media (prefers-color-scheme: dark)", with: "@media all")
+        }
+    }
+
     /**
      * Build a complete html file.
      * - parameters:
@@ -797,7 +809,7 @@ table.debug td {
             let css = (self.customCSSFetched ? self.customCSSCode : self.getCustomCSSCode()) ?? ""
             css_doc_extended = formatCSS(css)
             if css_doc_extended.isEmpty || !self.customCSSOverride {
-                css_doc += formatCSS(getBundleContents(forResource: "default", ofType: "css"))
+                css_doc += formatCSS(self.forcedAppearanceCSS(getBundleContents(forResource: "default", ofType: "css")))
             }
         }
             

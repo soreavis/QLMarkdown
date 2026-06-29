@@ -204,7 +204,8 @@ extension Settings {
         defaults.set(highlightExtension, forKey: Self.CodingKeys.hightlightExtension.rawValue)
         
         defaults.set(syntaxHighlightExtension, forKey: Self.CodingKeys.syntaxHighlightExtension.rawValue)
-        
+        defaults.set(appearanceMode.rawValue, forKey: Self.CodingKeys.appearanceMode.rawValue)
+
         defaults.set(syntaxWordWrapOption, forKey: Self.CodingKeys.syntaxWordWrapOption.rawValue)
         defaults.set(syntaxLineNumbersOption, forKey: Self.CodingKeys.syntaxLineNumbersOption.rawValue)
         defaults.set(syntaxTabsOption, forKey: Self.CodingKeys.syntaxTabsOption.rawValue)

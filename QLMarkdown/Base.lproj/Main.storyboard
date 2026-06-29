@@ -1895,8 +1895,37 @@
                                                         <action selector="openSystemSettings:" target="XfG-lQ-9wD" id="rLs-7k-9mO"/>
                                                     </connections>
                                                 </button>
+                                                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Apr-Mo-de0">
+                                                    <rect key="frame" x="188" y="270" width="95" height="24"/>
+                                                    <popUpButtonCell key="cell" type="push" title="Auto" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Apr-Mo-au0" id="Apr-Mo-de1">
+                                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="message"/>
+                                                        <menu key="menu" id="Apr-Mo-de2">
+                                                            <items>
+                                                                <menuItem title="Auto" state="on" id="Apr-Mo-au0"/>
+                                                                <menuItem title="Light" id="Apr-Mo-li0"/>
+                                                                <menuItem title="Dark" id="Apr-Mo-da0"/>
+                                                            </items>
+                                                        </menu>
+                                                    </popUpButtonCell>
+                                                    <connections>
+                                                        <action selector="handleAppearanceModeChanged:" target="XfG-lQ-9wD" id="Apr-Mo-act"/>
+                                                    </connections>
+                                                </popUpButton>
+                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Apr-Mo-lb0">
+                                                    <rect key="frame" x="18" y="274" width="164" height="16"/>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Appearance:" id="Apr-Mo-lb1">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="Apr-Mo-de0" firstAttribute="top" secondItem="CTX-6L-I3O" secondAttribute="bottom" constant="8" id="Apr-c1-top"/>
+                                                <constraint firstItem="Apr-Mo-de0" firstAttribute="leading" secondItem="CTX-6L-I3O" secondAttribute="leading" id="Apr-c2-led"/>
+                                                <constraint firstItem="Apr-Mo-de0" firstAttribute="leading" secondItem="Apr-Mo-lb0" secondAttribute="trailing" constant="8" id="Apr-c3-lbl"/>
+                                                <constraint firstItem="Apr-Mo-de0" firstAttribute="firstBaseline" secondItem="Apr-Mo-lb0" secondAttribute="firstBaseline" id="Apr-c4-bsl"/>
                                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="8An-Xf-Ur1" secondAttribute="trailing" constant="20" symbolic="YES" id="0HA-YX-gBY"/>
                                                 <constraint firstItem="CTX-6L-I3O" firstAttribute="top" secondItem="z2a-cF-5GG" secondAttribute="top" constant="8" id="150-c8-lhX"/>
                                                 <constraint firstItem="uGz-Oo-fnE" firstAttribute="leading" secondItem="C8t-xT-dXa" secondAttribute="trailing" constant="8" id="2P8-rF-L2z"/>
@@ -1932,7 +1961,7 @@
                                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="jgu-cG-sBC" secondAttribute="trailing" constant="20" symbolic="YES" id="eI9-YD-Rmx"/>
                                                 <constraint firstItem="Vsx-tk-3Vv" firstAttribute="centerY" secondItem="fVi-EX-Aci" secondAttribute="centerY" id="er5-9K-1YM"/>
                                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dOo-mR-WPE" secondAttribute="trailing" constant="20" symbolic="YES" id="g2W-1o-URO"/>
-                                                <constraint firstItem="fVi-EX-Aci" firstAttribute="top" secondItem="CTX-6L-I3O" secondAttribute="bottom" constant="8" symbolic="YES" id="g7T-RP-DfN"/>
+                                                <constraint firstItem="fVi-EX-Aci" firstAttribute="top" secondItem="Apr-Mo-de0" secondAttribute="bottom" constant="8" symbolic="YES" id="g7T-RP-DfN"/>
                                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="g31-cS-g4Y" secondAttribute="trailing" constant="20" symbolic="YES" id="h4T-WX-YXR"/>
                                                 <constraint firstItem="XA7-Gl-MRu" firstAttribute="centerY" secondItem="gn8-wq-9v6" secondAttribute="centerY" id="jDa-JZ-jsK"/>
                                                 <constraint firstItem="uGz-Oo-fnE" firstAttribute="baseline" secondItem="jgu-cG-sBC" secondAttribute="firstBaseline" id="jW8-He-nvm"/>
@@ -2050,17 +2079,6 @@
                                     <action selector="doRefresh:" target="XfG-lQ-9wD" id="22a-hs-tfF"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1nt-58-sRk">
-                                <rect key="frame" x="1008" y="9" width="16" height="16"/>
-                                <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="appearance" imagePosition="only" alignment="center" state="on" inset="2" id="mrl-iS-3hF">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <color key="contentTintColor" name="AccentColor"/>
-                                <connections>
-                                    <action selector="handleAppearanceChange:" target="XfG-lQ-9wD" id="hch-mF-GfO"/>
-                                </connections>
-                            </button>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b9r-w0-X9O">
                                 <rect key="frame" x="18" y="10" width="84" height="14"/>
                                 <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" title="Rendering time" id="ZSK-QM-7eZ">
@@ -2077,28 +2095,24 @@
                             <constraint firstItem="67x-X7-c0k" firstAttribute="top" secondItem="RbX-Sy-Yvt" secondAttribute="bottom" id="4Kh-qX-jVK"/>
                             <constraint firstItem="67x-X7-c0k" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="6hb-hc-425"/>
                             <constraint firstAttribute="trailing" secondItem="NQb-ad-sJy" secondAttribute="trailing" id="6rV-cN-3Sk"/>
-                            <constraint firstItem="1nt-58-sRk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="b9r-w0-X9O" secondAttribute="trailing" constant="8" symbolic="YES" id="B5a-md-6Eo"/>
-                            <constraint firstItem="1nt-58-sRk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="Bn7-zA-BTs"/>
-                            <constraint firstItem="1nt-58-sRk" firstAttribute="top" secondItem="67x-X7-c0k" secondAttribute="bottom" constant="8" symbolic="YES" id="Fcb-c0-wiN"/>
-                            <constraint firstAttribute="bottom" secondItem="1nt-58-sRk" secondAttribute="bottom" constant="9" id="HnD-dR-ZR6"/>
+                            <constraint firstItem="2s4-sQ-wsc" firstAttribute="top" secondItem="67x-X7-c0k" secondAttribute="bottom" constant="8" symbolic="YES" id="Fcb-c0-wiN"/>
+                            <constraint firstAttribute="bottom" secondItem="2s4-sQ-wsc" secondAttribute="bottom" constant="9" id="HnD-dR-ZR6"/>
                             <constraint firstItem="NQb-ad-sJy" firstAttribute="top" secondItem="buS-Ph-8Qs" secondAttribute="bottom" id="IiG-eu-nEi"/>
                             <constraint firstItem="NQb-ad-sJy" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="OQ1-f5-ooC"/>
                             <constraint firstItem="buS-Ph-8Qs" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="dps-bL-tBT"/>
-                            <constraint firstItem="b9r-w0-X9O" firstAttribute="centerY" secondItem="1nt-58-sRk" secondAttribute="centerY" id="g43-yn-9lO"/>
+                            <constraint firstItem="b9r-w0-X9O" firstAttribute="centerY" secondItem="2s4-sQ-wsc" secondAttribute="centerY" id="g43-yn-9lO"/>
                             <constraint firstItem="RbX-Sy-Yvt" firstAttribute="top" secondItem="NQb-ad-sJy" secondAttribute="bottom" id="h7B-cM-VFr"/>
                             <constraint firstAttribute="trailing" secondItem="67x-X7-c0k" secondAttribute="trailing" id="iC7-Bg-d8Y"/>
                             <constraint firstItem="buS-Ph-8Qs" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="mq8-dj-0uO"/>
                             <constraint firstAttribute="trailing" secondItem="RbX-Sy-Yvt" secondAttribute="trailing" id="n5z-Mr-g1R"/>
-                            <constraint firstItem="2s4-sQ-wsc" firstAttribute="leading" secondItem="1nt-58-sRk" secondAttribute="trailing" constant="8" symbolic="YES" id="p1z-Wv-oAa"/>
                             <constraint firstItem="RbX-Sy-Yvt" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="pF7-Yf-0Pd"/>
                             <constraint firstItem="b9r-w0-X9O" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="pQp-uC-9Bv"/>
-                            <constraint firstItem="1nt-58-sRk" firstAttribute="centerY" secondItem="2s4-sQ-wsc" secondAttribute="centerY" id="pb2-iW-ITU"/>
                             <constraint firstAttribute="trailing" secondItem="buS-Ph-8Qs" secondAttribute="trailing" id="qCk-sG-xx7"/>
                             <constraint firstAttribute="trailing" secondItem="2s4-sQ-wsc" secondAttribute="trailing" constant="20" symbolic="YES" id="yNc-9n-jGc"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="appearanceButton" destination="1nt-58-sRk" id="yd7-o8-TSs"/>
+                        <outlet property="appearancePopupButton" destination="Apr-Mo-de0" id="Apr-Mo-out"/>
                         <outlet property="emojiPopupButton" destination="ZqY-el-ju1" id="tpU-GX-yxZ"/>
                         <outlet property="fontSizeField" destination="fVi-EX-Aci" id="v7P-Ci-Mul"/>
                         <outlet property="fontSizeStepper" destination="2t7-PJ-hZL" id="Mrg-9N-cVz"/>

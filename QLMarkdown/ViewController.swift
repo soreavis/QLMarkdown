@@ -486,7 +486,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var progressIndicator: NSProgressIndicator!
     @IBOutlet weak var inlineLinkPopup: NSPopUpButton!
     
-    @IBOutlet weak var appearanceButton: NSButton!
+    @IBOutlet weak var appearancePopupButton: NSPopUpButton!
     
     @IBOutlet weak var qlWindowSizePopupButton: NSPopUpButton!
     
@@ -532,11 +532,16 @@ class ViewController: NSViewController {
         isDirty = true
     }
     
-    @IBAction func handleAppearanceChange(_ sender: NSButton) {
-        let dark = sender.state == .on
-        self.view.window?.appearance = NSAppearance(named: dark ? NSAppearance.Name.darkAqua : NSAppearance.Name.aqua)
-        sender.toolTip = dark ? "Switch to light appearance." :  "Switch to dark appearance."
-        self.doRefresh(sender)
+    @IBAction func handleAppearanceModeChanged(_ sender: NSPopUpButton) {
+        self.applyWindowAppearance()
+        isDirty = true
+    }
+
+    /// Themes the settings window to the popup's appearance; auto follows the system.
+    /// Menu order (Auto, Light, Dark) matches `Appearance`'s raw values, so the index maps directly.
+    private func applyWindowAppearance() {
+        let mode = Appearance(rawValue: appearancePopupButton.indexOfSelectedItem) ?? .undefined
+        self.view.window?.appearance = mode.nsAppearance
     }
     
     @IBAction func doStyleOverrideChange(_ sender: NSPopUpButton) {
@@ -938,7 +943,7 @@ class ViewController: NSViewController {
         
         let body: String
         let settings = self.updateSettings()
-        let appearance: Appearance = self.appearanceButton.state == .off ? .light : .dark
+        let appearance: Appearance = settings.resolvedAppearance
         do {
             body = try settings.render(text: self.textView.string, filename: markdown_file?.lastPathComponent ?? "", forAppearance: appearance, baseDir: markdown_file?.deletingLastPathComponent().path ?? "")
         } catch {
@@ -1023,7 +1028,7 @@ class ViewController: NSViewController {
         
         let body: String
         let settings = self.updateSettings()
-        let appearance: Appearance = self.appearanceButton.state == .off ? .light : .dark
+        let appearance: Appearance = settings.resolvedAppearance
         
         let startTime = CFAbsoluteTimeGetCurrent()
         
@@ -1210,11 +1215,6 @@ document.addEventListener('scroll', function(e) {
         self.textView.isAutomaticTextReplacementEnabled = false
         self.textView.isAutomaticDashSubstitutionEnabled = false
         textView.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
-        
-        let type = Settings.isLightAppearance ? "Light" : "Dark"
-        
-        self.appearanceButton.state = type != "Light" ? .on : .off
-        self.appearanceButton.toolTip = self.appearanceButton.state == .on ? "Switch to light appearance." : "Switch to dark appearance."
         self.webView.configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
         let contentController = self.webView.configuration.userContentController
         contentController.add(self, name: "scrollHandler")
@@ -1253,7 +1253,10 @@ document.addEventListener('scroll', function(e) {
     
     override func viewDidAppear() {
         super.viewDidAppear()
-        
+
+        // Apply the persisted appearance to the window now that it exists.
+        self.applyWindowAppearance()
+
         guard firstView else {
             return
         }
@@ -1360,6 +1363,7 @@ document.addEventListener('scroll', function(e) {
         self.isAboutVisible = settings.about
         
         inlineLinkPopup.selectItem(at: settings.openInlineLink ? 0 : 1)
+        appearancePopupButton.selectItem(at: settings.appearanceMode.rawValue)
         
         isDirty = false
         pauseAutoRefresh -= 1
@@ -1418,6 +1422,7 @@ document.addEventListener('scroll', function(e) {
         settings.customCSS = self.customCSSFile
         
         settings.openInlineLink = inlineLinkPopup.indexOfSelectedItem == 0
+        settings.appearanceMode = Appearance(rawValue: appearancePopupButton.indexOfSelectedItem) ?? .undefined
         
         settings.about = self.isAboutVisible
         
