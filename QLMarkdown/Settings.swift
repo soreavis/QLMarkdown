@@ -247,6 +247,7 @@ class Settings: Codable {
         case unsafeHTMLOption
         case smartQuotesOption
         case validateUTFOption
+        case tableOfContentsOption
         case baseFontSize
         case customCSS
         case customCSSCode
@@ -475,6 +476,7 @@ class Settings: Codable {
     var unsafeHTMLOption: Bool = true
     var smartQuotesOption: Bool = true
     var validateUTFOption: Bool = false
+    var tableOfContentsOption: Bool = false
     
     var baseFontSize: CGFloat = 0
     var customCSS: URL? {
@@ -550,6 +552,7 @@ class Settings: Codable {
         self.validateUTFOption = try container.decode(Bool.self, forKey: .validateUTFOption)
         self.smartQuotesOption = try container.decode(Bool.self, forKey: .smartQuotesOption)
         self.footnotesOption = try container.decode(Bool.self, forKey: .footnotesOption)
+        self.tableOfContentsOption = try container.decodeIfPresent(Bool.self, forKey: .tableOfContentsOption) ?? false
         
         self.baseFontSize = try container.decode(CGFloat.self, forKey: .baseFontSize)
         self.customCSS = try container.decode(URL?.self, forKey: .customCSS)
@@ -626,6 +629,7 @@ class Settings: Codable {
         try container.encode(self.validateUTFOption, forKey: .validateUTFOption)
         try container.encode(self.smartQuotesOption, forKey: .smartQuotesOption)
         try container.encode(self.footnotesOption, forKey: .footnotesOption)
+        try container.encode(self.tableOfContentsOption, forKey: .tableOfContentsOption)
         
         try container.encode(self.baseFontSize, forKey: .baseFontSize)
         try container.encode(self.customCSS, forKey: .customCSS)
@@ -717,6 +721,7 @@ class Settings: Codable {
         self.validateUTFOption = s.validateUTFOption
         self.smartQuotesOption = s.smartQuotesOption
         self.footnotesOption = s.footnotesOption
+        self.tableOfContentsOption = s.tableOfContentsOption
         
         self.baseFontSize = s.baseFontSize
         self.customCSS = s.customCSS
@@ -824,6 +829,9 @@ class Settings: Codable {
         }
         if let opt = defaultsDomain[Self.CodingKeys.footnotesOption.rawValue] as? Bool {
             footnotesOption = opt
+        }
+        if let opt = defaultsDomain[Self.CodingKeys.tableOfContentsOption.rawValue] as? Bool {
+            tableOfContentsOption = opt
         }
         
         

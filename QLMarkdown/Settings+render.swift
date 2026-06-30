@@ -559,6 +559,7 @@ table.debug td {
         html_debug += "</td></tr>\n"
         
         html_debug += "<tr><td>heads extension</td><td>" + (self.headsExtension ?  "on" : "off") + "</td></tr>\n"
+        html_debug += "<tr><td>table of contents</td><td>" + (self.tableOfContentsOption ? "on" : "off") + "</td></tr>\n"
         
         html_debug += "<tr><td>highlight extension</td><td>"
         if self.highlightExtension {
@@ -891,6 +892,29 @@ securityLevel: 'strict'
         let wrapper_open = self.renderAsCode ? "<pre class='hl'>" : "<article class='markdown-body'>"
         let wrapper_close = self.renderAsCode ? "</pre>" : "</article>"
         let body_style = self.renderAsCode ? " class='hl'" : ""
+
+        // TOC sidebar prototype (issue #161): build a clickable navigation and rewrite each
+        // heading with a unique, clean anchor so duplicate / emoji headings each scroll correctly.
+        let toc = (self.renderAsCode || !self.tableOfContentsOption) ? nil : buildTOC(processedBody)
+        let tocCSS = toc == nil ? "" : Self.tocSidebarCSS
+
+        let article = "\(wrapper_open)\n\(toc?.body ?? processedBody)\n\(wrapper_close)"
+        let bodyContent: String
+        if let toc {
+            bodyContent = """
+<div class='toc-layout'>
+<nav class='toc-sidebar'>
+\(toc.toc)
+</nav>
+<main class='toc-main'>
+\(article)
+</main>
+</div>
+"""
+        } else {
+            bodyContent = article
+        }
+
         let html =
 """
 <!doctype html>
@@ -899,13 +923,11 @@ securityLevel: 'strict'
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
 <title>\(title)</title>
-\(style)
+\(style)\(tocCSS)
 \(s_header)
 </head>
 <body\(body_style)>
-\(wrapper_open)
-\(processedBody)
-\(wrapper_close)
+\(bodyContent)
 \(s_footer)
 \(Self.aboutComment)
 </body>
@@ -913,6 +935,117 @@ securityLevel: 'strict'
 """
         return html
     }
+
+    /// Build a clickable table-of-contents sidebar AND rewrite each heading with a fresh,
+    /// unique, clean anchor id, so duplicate headings and emoji-containing headings each scroll
+    /// to the right place (the `heads` extension neither de-dupes slugs nor cleans emoji titles).
+    /// Returns the rewritten body + the TOC markup, or nil when there are fewer than two headings.
+    private func buildTOC(_ body: String) -> (body: String, toc: String)? {
+        let pattern = "<h([1-6])([^>]*)>(.*?)</h[1-6]>"
+        guard let re = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive, .dotMatchesLineSeparators]) else {
+            return nil
+        }
+        let ns = body as NSString
+        let matches = re.matches(in: body, range: NSRange(location: 0, length: ns.length))
+        guard matches.count >= 2 else {
+            return nil
+        }
+        let tagStripper = try? NSRegularExpression(pattern: "<[^>]+>", options: [])
+        let idStripper = try? NSRegularExpression(pattern: "\\s*id\\s*=\\s*\"[^\"]*\"", options: [.caseInsensitive])
+
+        var newBody = ""
+        var items = ""
+        var lastEnd = 0
+        var used: [String: Int] = [:]
+
+        for m in matches {
+            let full = m.range
+            let level = ns.substring(with: m.range(at: 1))
+            var attrs = ns.substring(with: m.range(at: 2))
+            let inner = ns.substring(with: m.range(at: 3))
+
+            // plain text of the heading (inline tags stripped) drives both the label and the slug
+            var text = inner
+            if let tagStripper {
+                let r = NSRange(location: 0, length: (text as NSString).length)
+                text = tagStripper.stringByReplacingMatches(in: text, range: r, withTemplate: "")
+            }
+            text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            newBody += ns.substring(with: NSRange(location: lastEnd, length: full.location - lastEnd))
+            lastEnd = full.location + full.length
+
+            guard !text.isEmpty else {
+                // empty heading: keep it as-is, leave it out of the TOC
+                newBody += ns.substring(with: full)
+                continue
+            }
+
+            var slug = Self.slugify(text)
+            if slug.isEmpty {
+                slug = "section"
+            }
+            if let n = used[slug] {
+                used[slug] = n + 1
+                slug = "\(slug)-\(n + 1)"
+            } else {
+                used[slug] = 1
+            }
+
+            // replace any id the heads extension assigned with our unique one
+            if let idStripper {
+                let r = NSRange(location: 0, length: (attrs as NSString).length)
+                attrs = idStripper.stringByReplacingMatches(in: attrs, range: r, withTemplate: "")
+            }
+            newBody += "<h\(level)\(attrs) id=\"\(slug)\">\(inner)</h\(level)>"
+
+            let tooltip = text.replacingOccurrences(of: "\"", with: "&quot;")
+            items += "<li class='toc-l\(level)'><a href='#\(slug)' title=\"\(tooltip)\">\(text)</a></li>\n"
+        }
+        newBody += ns.substring(with: NSRange(location: lastEnd, length: ns.length - lastEnd))
+
+        guard !items.isEmpty else {
+            return nil
+        }
+        return (newBody, "<ul>\n\(items)</ul>")
+    }
+
+    /// Lowercase slug: keep unicode letters/digits, collapse every other run to a single dash.
+    private static func slugify(_ text: String) -> String {
+        var slug = ""
+        var pendingDash = false
+        for ch in text.lowercased() {
+            if ch.isLetter || ch.isNumber {
+                if pendingDash && !slug.isEmpty {
+                    slug.append("-")
+                }
+                slug.append(ch)
+                pendingDash = false
+            } else {
+                pendingDash = true
+            }
+        }
+        return slug
+    }
+
+    private static let tocSidebarCSS = """
+<style type='text/css'>
+html { scroll-behavior: smooth; }
+.toc-layout { display: flex; align-items: flex-start; }
+.toc-sidebar { position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex: 0 0 28%; box-sizing: border-box; padding: 0.8em 0.5em; font-size: 0.8em; line-height: 1.35; }
+.toc-sidebar ul { list-style: none; margin: 0; padding: 0; }
+.toc-sidebar a { display: block; padding: 2px 4px; color: inherit; text-decoration: none; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toc-sidebar a:hover { background: rgba(128, 128, 128, 0.15); }
+.toc-main { flex: 1 1 auto; min-width: 0; padding-left: 1.5em; }
+.toc-main h1, .toc-main h2, .toc-main h3, .toc-main h4, .toc-main h5, .toc-main h6 { scroll-margin-top: 15px; }
+.toc-l1 { padding-left: 0; font-weight: 600; }
+.toc-l2 { padding-left: 0.9em; }
+.toc-l3 { padding-left: 1.8em; }
+.toc-l4 { padding-left: 2.7em; }
+.toc-l5, .toc-l6 { padding-left: 3.6em; }
+@media (max-width: 1300px) { .toc-sidebar { display: none; } .toc-main { padding-left: 0; } }
+</style>
+"""
     
     internal func parseYaml(node: Yams.Node) throws -> Any {
         switch node {

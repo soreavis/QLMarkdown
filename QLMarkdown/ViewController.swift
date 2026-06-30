@@ -221,6 +221,12 @@ class ViewController: NSViewController {
             isDirty = true
         }
     }
+    @objc dynamic var tableOfContentsOption: Bool = Settings.factorySettings.tableOfContentsOption {
+        didSet {
+            guard oldValue != tableOfContentsOption else { return }
+            isDirty = true
+        }
+    }
     
     @objc dynamic var debugMode: Bool = Settings.factorySettings.debug {
         didSet {
@@ -1347,6 +1353,7 @@ document.addEventListener('scroll', function(e) {
         self.unsafeHTMLOption = settings.unsafeHTMLOption
         self.validateUTFOption = settings.validateUTFOption
         self.smartQuotesOption = settings.smartQuotesOption
+        self.tableOfContentsOption = settings.tableOfContentsOption
         self.footnotesOption = settings.footnotesOption
         
         self.customCSSFile = settings.customCSS
@@ -1411,6 +1418,7 @@ document.addEventListener('scroll', function(e) {
         settings.unsafeHTMLOption = self.unsafeHTMLOption
         settings.validateUTFOption = self.validateUTFOption
         settings.smartQuotesOption = self.smartQuotesOption
+        settings.tableOfContentsOption = self.tableOfContentsOption
         settings.footnotesOption = self.footnotesOption
         
         settings.baseFontSize = self.useBaseFontSize ? self.baseFontSize : 0

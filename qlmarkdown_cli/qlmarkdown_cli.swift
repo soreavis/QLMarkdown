@@ -105,7 +105,10 @@ struct OptionsOptions: ParsableArguments {
     
     @Option(help: ArgumentHelp("Parse the footnotes.", valueName: "on|off"))
     var footnotes: BoolArgumentEnum? = nil
-    
+
+    @Option(help: ArgumentHelp("Show a table-of-contents sidebar in the preview.", valueName: "on|off"))
+    var tableOfContents: BoolArgumentEnum? = nil
+
     @Option(help: ArgumentHelp("Render soft-break elements as hard line breaks.", valueName: "on|off"))
     var hardBreak: BoolArgumentEnum? = nil
     
@@ -250,6 +253,9 @@ struct QLMarkdownCLI: ParsableCommand {
         if let o = options.footnotes {
             settings.footnotesOption = o == .on
         }
+        if let o = options.tableOfContents {
+            settings.tableOfContentsOption = o == .on
+        }
         if let o = options.hardBreak {
             settings.hardBreakOption = o == .on
         }
@@ -388,6 +394,7 @@ struct QLMarkdownCLI: ParsableCommand {
         print("    --appearance: \(appearance)")
         print("    --base-font-size: \(settings.baseFontSize > 0 ? "\(settings.baseFontSize) pt" : "auto")")
         print("    --footnotes: \(settings.footnotesOption ? "on" : "off")")
+        print("    --table-of-contents: \(settings.tableOfContentsOption ? "on" : "off")")
         print("    --hard-break: \(settings.hardBreakOption ? "on" : "off")")
         print("    --no-soft-break: \(settings.noSoftBreakOption ? "on" : "off")")
         print("    --raw-html: \(settings.unsafeHTMLOption ? "on" : "off")")

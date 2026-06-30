@@ -222,6 +222,7 @@ extension Settings {
         defaults.set(validateUTFOption, forKey: Self.CodingKeys.validateUTFOption.rawValue)
         defaults.set(smartQuotesOption, forKey: Self.CodingKeys.smartQuotesOption.rawValue)
         defaults.set(footnotesOption, forKey: Self.CodingKeys.footnotesOption.rawValue)
+        defaults.set(tableOfContentsOption, forKey: Self.CodingKeys.tableOfContentsOption.rawValue)
         
         if baseFontSize > 0 {
             defaults.set(baseFontSize, forKey: Self.CodingKeys.baseFontSize.rawValue)
